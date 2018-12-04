@@ -1,6 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Route, Redirect, Switch, BrowserRouter } from 'react-router-dom';
-import User from './components/User';
+import NotFound from './components/NotFound';
+import Login from './components/login/Login';
+import Logout from './components/login/Logout';
+import Register from './components/register/Register';
+import Dashboard from './components/dashboard/Dashboard';
+import ForgotPassword from './components/login/ForgotPassword';
+import ResetPassword from './components/login/ResetPassword';
 import './App.css';
 
 class App extends Component {
@@ -10,9 +16,14 @@ class App extends Component {
         <main className="container">
           <BrowserRouter>
             <Switch>
-              <Route path="/user" component={User} />
-              <Redirect from="/" to="/user" />
-              <Redirect to="/not-found" />
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/" render={() => <Redirect to="/login" />} />
+              <Route path="/logout" component={Logout} />
+              <Route path="/register" component={Register} />
+              <Route path="/forgot-password" component={ForgotPassword} />
+              <Route path="/reset-password" component={ResetPassword} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="*" component={NotFound} />
             </Switch>
           </BrowserRouter>
         </main>

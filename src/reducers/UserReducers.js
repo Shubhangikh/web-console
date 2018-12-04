@@ -1,10 +1,17 @@
-import AT from '../actions/ActionTypes';
+import AT from "../actions/ActionTypes";
 
-export const user = (state = { firstName: '', lastName: '' }, action) => {
+const userDefaults = {
+  email: "",
+  firstName: "",
+  lastName: ""
+};
+
+export const user = (state = userDefaults, action) => {
   switch (action.type) {
-    case AT.FETCH_USER_DETAILS_SUCCEEDED:
+    case AT.SET_USER_DETAILS:
       return {
         ...state,
+        email: action.payload.email,
         firstName: action.payload.firstName,
         lastName: action.payload.lastName
       };
