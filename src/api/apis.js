@@ -1,16 +1,15 @@
 import { api as client } from '../config/axiosConfig';
+import 'url-search-params-polyfill';
 
 // User
 export const submitUserLoginCredentials = credentials => {
-  return client.post(
-    '/uaa/oauth/token',
-    JSON.stringify({
-      username: credentials.username,
-      password: credentials.password,
-      grant_type: 'password',
-      scope: 'ui'
-    })
-  );
+  const formData = new URLSearchParams();
+  formData.append('grant_type', 'password');
+  formData.append('username', credentials.username);
+  formData.append('password', credentials.password);
+  formData.append('scope', 'ui');
+
+  return client.post('/uaa/oauth/token', formData.toString());
 };
 export const signupUser = registerUserData => {
   return client.post('/uaa/auth/register', {
@@ -21,7 +20,7 @@ export const signupUser = registerUserData => {
   });
 };
 export function fetchCurrentUserDetails() {
-  return client.get('/uaa/auth/current');
+  return client.get('/accounts/current');
 }
 export const fetchLoginDetails = () => {
   return client.get('/profile/user');

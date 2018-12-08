@@ -48,7 +48,7 @@ function checkPublicRoutes(url) {
 apiInstance.interceptors.response.use(
   response => {
     const url = _.get(response, 'request.responseURL');
-    const isLogin = url && url.indexOf('/login') !== -1;
+    const isLogin = url && url.indexOf('/uaa/oauth/token') !== -1;
 
     if (isLogin) {
       const accessToken = _.get(response, 'data.access_token');
