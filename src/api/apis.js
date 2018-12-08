@@ -1,14 +1,16 @@
 import { api as client } from '../config/axiosConfig';
+
 // User
 export const submitUserLoginCredentials = credentials => {
-  return client.post('/uaa/oauth/token', {
-    params: {
+  return client.post(
+    '/uaa/oauth/token',
+    JSON.stringify({
       username: credentials.username,
       password: credentials.password,
       grant_type: 'password',
       scope: 'ui'
-    }
-  });
+    })
+  );
 };
 export const signupUser = registerUserData => {
   return client.post('/uaa/auth/register', {
