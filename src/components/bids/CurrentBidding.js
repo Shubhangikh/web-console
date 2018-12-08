@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
-class Bids extends Component {
+class CurrentBidding extends Component {
   render() {
     const { classes } = this.props;
-    return <div className={classes.wrapper}>Bids</div>;
+    return <div className={classes.wrapper}>Live Bidding</div>;
   }
 }
 
@@ -15,4 +15,4 @@ const styles = () => ({
   }
 });
 
-export default withStyles(styles)(Bids);
+export default withStyles(styles)(CurrentBidding);

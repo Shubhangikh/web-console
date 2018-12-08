@@ -14,7 +14,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
+      username: '',
       password: '',
       errorFlag: false,
       errorMessage: ''
@@ -23,9 +23,9 @@ class Login extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { email, password } = this.state;
+    const { username, password } = this.state;
     const { loginUser } = this.props;
-    loginUser({ email, password })
+    loginUser({ username, password })
       .then(() => this.handleSuccess())
       .catch(error => this.handleError(error));
   };
@@ -33,20 +33,20 @@ class Login extends Component {
   handleSuccess = () => {
     this.resetForm();
     const { location, history } = this.props;
-    history.push('/dashboard');
+    history.push('/home');
   };
 
   handleError = response => {
     this.setState({
       errorFlag: true,
-      errorMessage: 'Email or Password is incorrect.  Please try again.',
+      errorMessage: 'Username or Password is incorrect.  Please try again.',
       resendFlag: false
     });
   };
 
   resetForm = () => {
     this.setState({
-      email: '',
+      username: '',
       password: '',
       errorFlag: false,
       errorMessage: ''
@@ -71,13 +71,13 @@ class Login extends Component {
         </Typography>
         <form onSubmit={this.handleSubmit} className={classes.loginForm}>
           <TextField
-            id="email"
-            type="email"
-            label="Email"
-            value={this.state.email}
+            id="username"
+            type="text"
+            label="Username"
+            value={this.state.username}
             required
-            className={`${classes.textField} ${'login-email'}`}
-            onChange={this.handleChange('email')}
+            className={classes.textField}
+            onChange={this.handleChange('username')}
           />
           <TextField
             id="password"

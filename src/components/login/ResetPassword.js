@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -63,6 +62,10 @@ class ResetPassword extends Component {
       });
     }
   }
+
+  handleSubmit = event => {
+    event.preventDefault();
+  };
 
   render() {
     const { classes } = this.props;

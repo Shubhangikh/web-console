@@ -1,17 +1,29 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import AppHeader from '../common/AppHeader';
+import ManageAuctionSchedule from './ManageAuctionSchedule';
+import ItemAuction from './ItemAuction';
 
 class Auction extends Component {
   render() {
     const { classes } = this.props;
-    return <div className={classes.wrapper} />;
+    return (
+      <Fragment>
+        <AppHeader />
+        <div className={classes.wrapper}>
+          <ManageAuctionSchedule />
+          {/* <ItemAuction /> */}
+        </div>
+      </Fragment>
+    );
   }
 }
 
 const styles = () => ({
   wrapper: {
     display: 'flex',
-    flexWrap: 'wrap'
+    padding: '70px 50px 50px 50px',
+    flexDirection: 'column'
   }
 });
 

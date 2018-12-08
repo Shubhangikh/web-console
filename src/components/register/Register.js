@@ -162,6 +162,7 @@ class Register extends Component {
 
               <TextField
                 id="userame"
+                type="text"
                 label="Username"
                 value={this.state.username}
                 required

@@ -1,10 +1,13 @@
 import { api as client } from '../config/axiosConfig';
-
 // User
 export const submitUserLoginCredentials = credentials => {
-  return client.post('/uaa/auth/token', {
-    email: credentials.email,
-    password: credentials.password
+  return client.post('/uaa/oauth/token', {
+    params: {
+      username: credentials.username,
+      password: credentials.password,
+      grant_type: 'password',
+      scope: 'ui'
+    }
   });
 };
 export const signupUser = registerUserData => {
@@ -16,7 +19,7 @@ export const signupUser = registerUserData => {
   });
 };
 export function fetchCurrentUserDetails() {
-  return client.get('/api/auth/v1/me');
+  return client.get('/uaa/auth/current');
 }
 export const fetchLoginDetails = () => {
   return client.get('/profile/user');

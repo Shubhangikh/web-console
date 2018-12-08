@@ -1,13 +1,13 @@
-import axios from "axios";
-import store from "../storeConfig";
-import _ from "lodash";
+import axios from 'axios';
+import store from '../storeConfig';
+import _ from 'lodash';
 
-import { setUserDetails, logout } from "../../actions/UserActions";
-import { setAuthentication } from "../../reducers/AuthReducers";
+import { setUserDetails, logout } from '../../actions/UserActions';
+import { setAuthentication } from '../../reducers/AuthReducers';
 
 const apiInstance = axios.create({
   headers: {
-    "Content-Type": "application/json"
+    'Content-Type': 'application/json'
   }
 });
 
@@ -16,12 +16,14 @@ apiInstance.interceptors.request.use(
     const isPublic = checkPublicRoutes(config.url);
 
     if (isPublic || config.headers.Authorization) {
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      config.headers.Authorization = 'Basic YnJvd3Nlcjo=';
       return config;
     }
 
     const { auth } = store.getState();
-    const userToken = _.get(auth, "accessToken");
-
+    const userToken = _.get(auth, 'accessToken');
+    // userToken = "cdcf8c17-66d5-4c86-a451-3850597e62eb";
     if (userToken) {
       config.headers.Authorization = `Bearer ${userToken}`;
     }
@@ -33,10 +35,10 @@ apiInstance.interceptors.request.use(
 apiInstance.interceptors.response.use();
 
 const publicRoutes = [
-  "/login",
-  "/register",
-  "/resetPassword",
-  "/forgotPassword"
+  '/uaa/oauth/token',
+  '/register',
+  '/resetPassword',
+  '/forgotPassword'
 ];
 
 function checkPublicRoutes(url) {
@@ -45,14 +47,14 @@ function checkPublicRoutes(url) {
 
 apiInstance.interceptors.response.use(
   response => {
-    const url = _.get(response, "request.responseURL");
-    const isLogin = url && url.indexOf("/login") !== -1;
+    const url = _.get(response, 'request.responseURL');
+    const isLogin = url && url.indexOf('/login') !== -1;
 
     if (isLogin) {
-      const accessToken = _.get(response, "data.access_token");
-      const refreshToken = _.get(response, "data.refresh_token");
-      const expirationTime = _.get(response, "data.expires_in");
-      const scope = _.get(response, "data.scope");
+      const accessToken = _.get(response, 'data.access_token');
+      const refreshToken = _.get(response, 'data.refresh_token');
+      const expirationTime = _.get(response, 'data.expires_in');
+      const scope = _.get(response, 'data.scope');
 
       store.dispatch(
         setAuthentication({

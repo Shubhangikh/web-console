@@ -18,6 +18,24 @@ class ForgotPassword extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    const { email } = this.state;
+    const { loginUser } = this.props;
+    loginUser(email)
+      .then(() => this.handleSuccess())
+      .catch(error => this.handleError(error));
+  };
+
+  handleSuccess = () => {
+    this.resetForm();
+  };
+
+  handleError = response => {
+    this.setState({
+      errorFlag: true,
+      errorMessage:
+        'Looks like this email is not registered. Please try again with a registered email.',
+      resendFlag: false
+    });
   };
 
   resetForm = () => {
