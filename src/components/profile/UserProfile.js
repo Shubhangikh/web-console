@@ -1,27 +1,61 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import AppHeader from '../common/AppHeader';
 import Typography from '@material-ui/core/Typography';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import {
+  updateProfile,
+  fetchAndSetCurrentUser
+} from '../../actions/UserActions';
 
 class UserProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      showPassword: false,
-      showConfirmPassword: false,
-      passwordUnmatchError: false,
-      passwordUnmatchHelperText: ''
+      id: props.user.id,
+      name: props.user.name,
+      username: props.user.username,
+      email: props.user.email,
+      address: props.user.address,
+      city: props.user.city,
+      zip: props.user.zip,
+      updateSuccessful: false,
+      updateSuccessText: ''
     };
   }
   handleChange = field => event => {
+    this.setState({ updateSuccessful: false, updateSuccessText: '' });
     this.setState({ [field]: event.target.value });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    const { name, username, email, address, city, zip } = this.state;
+    const { updateProfile } = this.props;
+    updateProfile({ name, username, email, address, city, zip })
+      .then(() => this.handleSuccess())
+      .catch(error => this.handleError(error));
+  };
+
+  handleSuccess = () => {
+    // this.props.fetchAndSetCurrentUser();
+    this.setState({
+      updateSuccessful: true,
+      updateSuccessText: 'Profile successfully updated!'
+    });
+  };
+
+  handleError = response => {
+    console.log('Error in Sign Up. Please try again later. ', response);
+    this.setState({
+      signUpError: true,
+      signUpErrorText: 'Error in Sign Up. Please try again later.'
+    });
   };
 
   render() {
@@ -37,16 +71,31 @@ class UserProfile extends Component {
           >
             {'My Profile'}
           </Typography>
-
+          {this.state.updateSuccessful && (
+            <FormHelperText classes={{ root: classes.helperText }}>
+              {this.state.updateSuccessText}
+            </FormHelperText>
+          )}
           <form onSubmit={this.handleSubmit} className={classes.userForm}>
             <TextField
               id="username"
               type="text"
               label="Username"
               value={this.state.username}
+              required
               disabled
               className={classes.textField}
               onChange={this.handleChange('username')}
+            />
+            <TextField
+              id="email"
+              type="email"
+              label="Email"
+              value={this.state.email}
+              required
+              disabled
+              className={classes.textField}
+              onChange={this.handleChange('email')}
             />
             <TextField
               id="name"
@@ -58,16 +107,41 @@ class UserProfile extends Component {
               className={classes.textField}
               onChange={this.handleChange('name')}
             />
-
+            <Divider />
             <TextField
-              id="email"
-              type="email"
-              label="Email"
-              value={this.state.email}
+              id="address"
+              type="text"
+              label="Address"
+              inputProps={{ maxLength: 255 }}
+              value={this.state.address}
               required
-              className={`${classes.textField} ${'login-email'}`}
-              onChange={this.handleChange('email')}
+              className={classes.textField}
+              onChange={this.handleChange('address')}
             />
+            <div className={classes.cityWrapper}>
+              <TextField
+                id="city"
+                type="text"
+                label="City"
+                value={this.state.city}
+                required
+                className={classes.addressField}
+                onChange={this.handleChange('city')}
+              />
+              <TextField
+                id="zip"
+                type="number"
+                min="11111"
+                max="99999"
+                step="1"
+                label="ZIP"
+                inputProps={{ maxLength: 5 }}
+                value={this.state.zip}
+                required
+                className={classes.addressField}
+                onChange={this.handleChange('zip')}
+              />
+            </div>
             <div className={classes.btnWrapper}>
               <Button
                 variant="contained"
@@ -77,14 +151,6 @@ class UserProfile extends Component {
               >
                 {'Update Profile'}
               </Button>
-              <Button
-                variant="contained"
-                color={'primary'}
-                className={classes.profileBtn}
-                type={'reset'}
-              >
-                {'Clear'}
-              </Button>
             </div>
           </form>
         </div>
@@ -92,6 +158,22 @@ class UserProfile extends Component {
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    user: state.user
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return bindActionCreators(
+    {
+      updateProfile,
+      fetchAndSetCurrentUser
+    },
+    dispatch
+  );
+};
 
 const styles = () => ({
   wrapper: {
@@ -122,7 +204,24 @@ const styles = () => ({
     margin: '15px 5px 15px 0',
     padding: '5px',
     textTransform: 'none'
+  },
+  addressField: {
+    marginRight: '10px'
+  },
+  cityWrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    width: '100%'
+  },
+  helperText: {
+    color: '#33cc33'
   }
 });
 
-export default withStyles(styles)(UserProfile);
+export default withStyles(styles)(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(UserProfile)
+);

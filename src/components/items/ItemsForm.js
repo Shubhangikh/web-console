@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -11,14 +12,27 @@ import CardContent from '@material-ui/core/CardContent';
 class ItemsForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      name: '',
-      description: '',
-      minBidPrice: '',
-      image: null,
-      heading: 'Post New Item',
-      buttonText: 'Create'
-    };
+    if (!props.selectedItem) {
+      this.state = {
+        name: '',
+        description: '',
+        minBidPrice: '',
+        selectedFile: null,
+        loaded: 0,
+        heading: 'Post New Item',
+        buttonText: 'Create'
+      };
+    } else {
+      this.state = {
+        name: props.selectedItem.name,
+        description: props.selectedItem.description,
+        minBidPrice: props.selectedItem.minBidPrice,
+        selectedFile: null,
+        loaded: 0,
+        heading: 'Edit Item',
+        buttonText: 'Save'
+      };
+    }
   }
 
   handleChange = (e, field) => {
@@ -26,9 +40,64 @@ class ItemsForm extends Component {
       [field]: e.target.value
     });
   };
+  handleSelectedFile = event => {
+    this.setState({
+      selectedFile: event.target.files[0],
+      loaded: 0
+    });
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    const { name, description, minBidPrice, selectedFile } = this.state;
+    const {
+      selectedItem,
+      fetchAllItems,
+      onClose,
+      pageIndex,
+      pageSize,
+      editItem,
+      createItem,
+      username
+    } = this.props;
+    const data = new FormData();
+    const item = {
+      name,
+      description,
+      minBidPrice
+    };
+
+    if (!selectedItem) {
+      let file = selectedFile;
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = function() {
+        // console.log('RESULT', reader.result);
+        data.append('image', reader.result);
+        data.append('item', item);
+        createItem(data)
+          .then(response => {
+            onClose();
+            fetchAllItems(username, pageIndex, pageSize);
+          })
+          .catch(error => {
+            console.log('Error while creating item', error);
+          });
+      };
+    } else {
+      editItem(item)
+        .then(response => {
+          onClose();
+          fetchAllItems(username, pageIndex, pageSize);
+        })
+        .catch(error => {
+          console.log('Error while modifying item', error);
+        });
+    }
+  };
 
   render() {
-    const { classes, onClose } = this.props;
+    const { classes, onClose, selectedItem } = this.props;
     return (
       <div className={classes.paper}>
         <Card className={classes.card}>
@@ -67,6 +136,19 @@ class ItemsForm extends Component {
                 className={classes.textField}
                 onChange={e => this.handleChange(e, 'minBidPrice')}
               />
+              {!selectedItem ? (
+                <Fragment>
+                  <label htmlFor="selectedFile">Choose file to upload</label>
+                  <input
+                    type="file"
+                    id="selectedFile"
+                    name="selectedFile"
+                    onChange={this.handleSelectedFile}
+                  />
+                </Fragment>
+              ) : (
+                ''
+              )}
               <div className={classes.btnWrapper}>
                 <Button
                   variant="contained"
@@ -129,6 +211,9 @@ const styles = () => ({
   textField: {
     width: '30vw'
   },
+  uploadText: {
+    marginTop: 20
+  },
   btnWrapper: {
     display: 'flex',
     flexDirection: 'row',
@@ -140,5 +225,12 @@ const styles = () => ({
     textTransform: 'none'
   }
 });
-
-export default withStyles(styles)(ItemsForm);
+const mapStateToProps = state => {
+  return {
+    pageSize: state.items.pageSize,
+    pageIndex: state.items.pageIndex,
+    items: state.items.items,
+    username: state.user.username
+  };
+};
+export default withStyles(styles)(connect(mapStateToProps)(ItemsForm));

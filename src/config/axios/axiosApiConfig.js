@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '../storeConfig';
 import _ from 'lodash';
 
-import { setUserDetails, logout } from '../../actions/UserActions';
+import { logout } from '../../actions/UserActions';
 import { setAuthentication } from '../../reducers/AuthReducers';
 
 const apiInstance = axios.create({

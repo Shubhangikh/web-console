@@ -1,5 +1,6 @@
 import AT from './ActionTypes';
 import * as api from '../api/apis';
+import { persistConfig } from '../config/storeConfig';
 
 export const loginUser = credentials => dispatch => {
   return api.submitUserLoginCredentials(credentials).then(() => {
@@ -7,19 +8,20 @@ export const loginUser = credentials => dispatch => {
   });
 };
 
-export const registerUser = (
-  registerUserData,
-  successCallback,
-  errorCallback
-) => {
-  return api
-    .signupUser(registerUserData)
-    .then(() => {
-      successCallback();
-    })
-    .catch(error => {
-      errorCallback(error);
-    });
+export const registerUser = formData => () => {
+  const registerData = {};
+  registerData['user'] = {
+    username: formData.username,
+    password: formData.password,
+    email: formData.email
+  };
+  registerData['profile'] = {
+    name: formData.name,
+    address: formData.address,
+    city: formData.city,
+    zip: parseInt(formData.zip)
+  };
+  return api.signupUser(registerData);
 };
 
 export const fetchAndSetCurrentUser = () => dispatch => {
@@ -34,21 +36,27 @@ export const fetchAndSetCurrentUser = () => dispatch => {
   });
 };
 
-export const fetchUserDetails = () => {
-  return dispatch => {
-    return api
-      .fetchUserDetails()
-      .then(response => {
-        console.log('response: ', response);
-        dispatch({
-          type: AT.FETCH_USER_DETAILS_SUCCEEDED,
-          payload: response.data
-        });
-      })
-      .catch(error => {
-        console.log('Request failed', error);
+export const updateProfile = account => dispatch => {
+  return new Promise(resolve => {
+    const userData = {
+      name: account.username,
+      email: account.email
+    };
+    userData['profile'] = {
+      id: account.id,
+      name: account.name,
+      address: account.address,
+      city: account.city,
+      zip: parseInt(account.zip)
+    };
+    return api.updateCurrentUserDetails(userData).then(({ data }) => {
+      dispatch({
+        type: AT.UPDATE_USER_PROFILE_SUCCEEDED,
+        payload: data
       });
-  };
+      return resolve(data);
+    });
+  });
 };
 
 export const setUserDetails = payload => {
@@ -59,6 +67,7 @@ export const setUserDetails = payload => {
 };
 
 export const logout = () => {
+  localStorage.removeItem(`persist:${persistConfig.key}`);
   return {
     type: AT.USER_LOGOUT
   };

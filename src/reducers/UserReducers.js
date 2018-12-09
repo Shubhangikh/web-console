@@ -1,9 +1,13 @@
 import AT from '../actions/ActionTypes';
 
 const userDefaults = {
+  id: '',
   email: '',
-  firstName: '',
-  lastName: ''
+  username: '',
+  name: '',
+  address: '',
+  city: '',
+  zip: 0
 };
 
 export const user = (state = userDefaults, action) => {
@@ -11,10 +15,23 @@ export const user = (state = userDefaults, action) => {
     case AT.SET_CURRENT_USER:
       return {
         ...state,
+        id: action.payload.profile.id,
         email: action.payload.email,
-        firstName: action.payload.firstName,
-        lastName: action.payload.lastName
+        username: action.payload.name,
+        name: action.payload.profile.name,
+        address: action.payload.profile.address,
+        city: action.payload.profile.city,
+        zip: action.payload.profile.zip
       };
+    case AT.UPDATE_USER_PROFILE_SUCCEEDED: {
+      return {
+        ...state,
+        name: action.payload.profile.name,
+        address: action.payload.profile.address,
+        city: action.payload.profile.city,
+        zip: action.payload.profile.zip
+      };
+    }
     default:
       return state;
   }

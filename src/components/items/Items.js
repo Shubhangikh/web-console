@@ -4,12 +4,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Typography from '@material-ui/core/Typography';
 import AppHeader from '../common/AppHeader';
-import ItemsList from './ItemsList';
+import Item from './Item';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
 import Add from '@material-ui/icons/Add';
 import ItemsDialog from './ItemsDialog';
+import TablePagination from '@material-ui/core/TablePagination';
 import { openItemsDialog, closeItemsDialog } from '../../actions/ItemsActions';
+import { fetchAllItems } from '../../actions/ItemsActions';
 
 class Items extends Component {
   constructor(props) {
@@ -18,11 +20,23 @@ class Items extends Component {
       open: false
     };
   }
+  componentDidMount() {
+    const { username, pageIndex, pageSize } = this.props;
+    this.props.fetchAllItems(username, pageIndex, pageSize);
+  }
   handlePostNewItem = () => {
     this.props.openItemsDialog();
   };
+  handleChangePage = (event, page) => {
+    const { fetchAllItems, pageSize, item } = this.props;
+    fetchAllItems(item.username, page, pageSize);
+  };
+  handleChangeRowsPerPage = event => {
+    const { fetchAllItems, item } = this.props;
+    fetchAllItems(item.username, 0, event.target.value);
+  };
   render() {
-    const { classes, itemsDialogOpen, closeItemsDialog } = this.props;
+    const { classes, itemsDialogOpen, closeItemsDialog, items } = this.props;
     return (
       <Fragment>
         <AppHeader />
@@ -41,10 +55,30 @@ class Items extends Component {
               </Fab>
             </Tooltip>
           </div>
-          <ItemsList openModal={this.openModal} closeModal={this.closeModal} />
+          <TablePagination
+            classes={{ root: classes.pagination }}
+            component="div"
+            count={100}
+            rowsPerPage={this.props.pageSize}
+            page={this.props.pageIndex}
+            onChangePage={this.handleChangePage}
+            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            labelRowsPerPage={'Items per page'}
+          />
+          {items &&
+            items.map(item => {
+              return (
+                <Item
+                  item={item}
+                  openModal={this.openModal}
+                  closeModal={this.closeModal}
+                />
+              );
+            })}
           <ItemsDialog
             itemsDialogOpen={itemsDialogOpen}
             closeItemsDialog={closeItemsDialog}
+            fetchAllItems={fetchAllItems}
           />
         </div>
       </Fragment>
@@ -54,7 +88,11 @@ class Items extends Component {
 
 const mapStateToProps = state => {
   return {
-    itemsDialogOpen: state.items.itemsDialogOpen
+    itemsDialogOpen: state.items.itemsDialogOpen,
+    pageSize: state.items.pageSize || 10,
+    pageIndex: state.items.pageIndex || 0,
+    items: state.items.items,
+    username: state.user.username
   };
 };
 
@@ -62,7 +100,8 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators(
     {
       openItemsDialog,
-      closeItemsDialog
+      closeItemsDialog,
+      fetchAllItems
     },
     dispatch
   );
@@ -85,6 +124,10 @@ const styles = () => ({
   },
   add: {
     background: '#0088cc'
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center'
   }
 });
 

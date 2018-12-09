@@ -19,7 +19,6 @@ class App extends Component {
     return (
       <Fragment>
         <main className="container">
-          {/* <AppHeader /> */}
           <BrowserRouter>
             <Switch>
               <Route exact path="/login" component={Login} />

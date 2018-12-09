@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
 import Modal from '@material-ui/core/Modal';
 import ItemsForm from './ItemsForm';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { createItem, editItem } from '../../actions/ItemsActions';
 
 class ItemsDialog extends Component {
   render() {
-    const { itemsDialogOpen, closeItemsDialog } = this.props;
+    const {
+      itemsDialogOpen,
+      closeItemsDialog,
+      selectedItem,
+      createItem,
+      fetchAllItems,
+      editItem
+    } = this.props;
     return (
       <Modal
         aria-labelledby="Items"
@@ -13,10 +23,35 @@ class ItemsDialog extends Component {
         onClose={closeItemsDialog}
         disableAutoFocus
       >
-        <ItemsForm onClose={closeItemsDialog} />
+        <ItemsForm
+          onClose={closeItemsDialog}
+          selectedItem={selectedItem}
+          createItem={createItem}
+          editItem={editItem}
+          fetchAllItems={fetchAllItems}
+        />
       </Modal>
     );
   }
 }
 
-export default ItemsDialog;
+const mapStateToProps = (state, ownProps) => {
+  return {
+    selectedItem: state.items.selectedItem
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return bindActionCreators(
+    {
+      createItem,
+      editItem
+    },
+    dispatch
+  );
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ItemsDialog);

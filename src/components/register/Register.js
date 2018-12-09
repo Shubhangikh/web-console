@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -27,6 +28,9 @@ class Register extends Component {
       email: '',
       password: '',
       confirmPassword: '',
+      address: '',
+      city: '',
+      zip: '',
       showPassword: false,
       showConfirmPassword: false,
       passwordUnmatchError: false,
@@ -50,6 +54,9 @@ class Register extends Component {
       email: '',
       password: '',
       confirmPassword: '',
+      address: '',
+      city: '',
+      zip: '',
       showPassword: false,
       showConfirmPassword: false,
       passwordUnmatchError: false,
@@ -62,13 +69,9 @@ class Register extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { name, username, email, password } = this.state;
+    const { name, username, email, password, address, city, zip } = this.state;
     const { registerUser } = this.props;
-    registerUser(
-      { name, username, email, password },
-      this.handleSuccess,
-      this.handleError
-    )
+    registerUser({ name, username, email, password, address, city, zip })
       .then(() => this.handleSuccess())
       .catch(error => this.handleError(error));
   };
@@ -240,7 +243,41 @@ class Register extends Component {
                   </FormHelperText>
                 )}
               </FormControl>
-
+              <Divider />
+              <TextField
+                id="address"
+                type="text"
+                label="Address"
+                inputProps={{ maxLength: 255 }}
+                value={this.state.address}
+                required
+                className={classes.textField}
+                onChange={this.handleChange('address')}
+              />
+              <div className={classes.cityWrapper}>
+                <TextField
+                  id="city"
+                  type="text"
+                  label="City"
+                  value={this.state.city}
+                  required
+                  className={classes.addressField}
+                  onChange={this.handleChange('city')}
+                />
+                <TextField
+                  id="zip"
+                  type="number"
+                  min="11111"
+                  max="99999"
+                  step="1"
+                  label="ZIP"
+                  inputProps={{ maxLength: 5 }}
+                  value={this.state.zip}
+                  required
+                  className={classes.addressField}
+                  onChange={this.handleChange('zip')}
+                />
+              </div>
               <Button
                 variant="contained"
                 color={'primary'}
@@ -266,7 +303,7 @@ class Register extends Component {
             </Typography>
           </div>
         ) : (
-          <Typography variant="h2" align="center">
+          <Typography variant="h5" align="center">
             Congratulations! You have been successfully registered.
             <br />
             <Link to="/login" style={{ color: 'inherit' }}>
@@ -307,6 +344,10 @@ const styles = () => ({
     margin: 'auto',
     width: '30vw'
   },
+  /* addressField: {
+    margin: 'auto',
+    width: '50%'
+  }, */
   signUpBtn: {
     margin: 'auto',
     width: '30vw',
@@ -314,6 +355,13 @@ const styles = () => ({
     marginBottom: '15px',
     padding: '5px',
     textTransform: 'none'
+  },
+  cityWrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between'
   }
 });
 

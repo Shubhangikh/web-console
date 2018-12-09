@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 /* Actions */
-import { loginUser } from '../../actions/UserActions';
+import { loginUser, logout } from '../../actions/UserActions';
 
 class Login extends Component {
   constructor(props) {
@@ -19,6 +19,12 @@ class Login extends Component {
       errorFlag: false,
       errorMessage: ''
     };
+  }
+
+  componentDidMount() {
+    if (this.props.location.pathname.indexOf('/logout') !== -1) {
+      //this.props.logout();
+    }
   }
 
   handleSubmit = e => {

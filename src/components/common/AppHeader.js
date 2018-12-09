@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 class AppHeader extends Component {
   render() {
-    const { classes } = this.props;
+    const { classes, name } = this.props;
     return (
       <AppBar className={classes.header}>
         <Toolbar className={classes.headerContent}>
@@ -32,7 +32,7 @@ class AppHeader extends Component {
               align="center"
               classes={{ root: classes.welcomeMessage }}
             >
-              {'Welcome User'}
+              {`Welcome ${name}`}
             </Typography>
             <Link to="/logout" style={{ color: 'transparent' }}>
               <Typography
@@ -76,7 +76,9 @@ const styles = () => ({
 });
 
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    name: state.user.name
+  };
 };
 
 const mapDispatchToProps = (dispatch, props) => {
